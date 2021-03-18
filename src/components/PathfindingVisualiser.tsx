@@ -56,6 +56,8 @@ export const PathfindingVisualiser = () => {
         ["divide-vertical", divideVertical]
     ]);
 
+    const DELAY = calculateDelay();
+
     const opacity = isModalVisible ? "0.1" : "1";
 
     async function animateAlgorithm(pathAlgo: string, heuristic: string) {
@@ -65,12 +67,18 @@ export const PathfindingVisualiser = () => {
         setRunning(true);
 
         for (let i = 0; i < frames.length; i++) {
-            await wait(5);
+            await wait(DELAY);
 
             setGridFrame(frames[i]);
         }
 
         setRunning(false);
+    }
+
+    function calculateDelay() {
+        const modifier = 2400;
+
+        return modifier / (HEIGHT + WIDTH);
     }
 
     function toggleWeightAt(pos: Coord) {
