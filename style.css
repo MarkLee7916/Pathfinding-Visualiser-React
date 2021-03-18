@@ -1,0 +1,165 @@
+* {
+  font-family: Helvetica-Neue, sans-serif;
+}
+
+#main-content {
+  background-color: paleturquoise;
+  height: 100%;
+  width: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  overflow: auto;
+}
+
+header {
+  background: black;
+  text-align: center;
+  padding-top: 2vh;
+  padding-bottom: 2vh;
+  margin-bottom: 2vh;
+}
+
+.menu-button {
+  border: none;
+  background-color: black;
+  font-size: 1vw;
+  color: white;
+  cursor: pointer;
+  outline: none;
+}
+
+.menu-button:hover {
+  opacity: 0.5;
+}
+
+.menu-text {
+  font-size: 1vw;
+  color: white;
+}
+
+#menu {
+  display: flex;
+  justify-content: space-around;
+}
+
+.color-codes {
+  margin-left: 1vw;
+  font-size: 2vmin;
+}
+
+#grid {
+  border-collapse: collapse;
+  table-layout: fixed;
+  overflow: hidden;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 2vh;
+}
+
+#description {
+  padding-top: 2vh;
+  text-align: center;
+  font-size: 2vmin;
+}
+
+.tutorial-modal {
+  position: absolute;
+  left: 10%;
+  margin: auto;
+  border-style: solid;
+  border-width: 1px;
+  text-align: center;
+  height: 75%;
+  width: 80%;
+  top: 20%;
+  background-color: white;
+}
+
+.modal-image {
+  margin-top: 3vh;
+  height: 34.3vmin;
+  width: 60.9vmin;
+}
+
+#graph-image {
+  height: 22.5vmin;
+  width: 25vmin;
+}
+
+.heading {
+  font-size: 8vmin;
+}
+
+.sub-heading {
+  font-size: 4vmin;
+}
+
+.modal-text {
+  font-size: 2.5vmin;
+}
+
+.finish-tutorial {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  margin-bottom: 20px;
+  margin-left: 20px;
+}
+
+.next-page,
+#finish-final-modal {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  margin-bottom: 20px;
+  margin-right: 2vmin;
+}
+
+.previous-page {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  margin-right: 15vmin;
+  margin-bottom: 20px;
+}
+
+.modal-button {
+  border: none;
+  background-color: #e1909b;
+  color: white;
+  font-size: 2vmin;
+  padding: 3vmin;
+  border-radius: 10px;
+}
+
+.modal-button:hover {
+  opacity: 0.5;
+  cursor: pointer;
+}
+
+a:hover {
+  opacity: 0.5;
+}
+
+.row {
+  overflow: hidden;
+}
+
+.tile {
+  border: 1px solid gray;
+  cursor: pointer;
+  overflow: hidden;
+  font-weight: 900;
+  color: gray;
+  height: 25px;
+  width: 25px;
+  user-select: none;
+  text-align: center;
+}
+
+.tile:hover {
+  opacity: 0.5;
+}
