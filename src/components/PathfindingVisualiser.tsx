@@ -16,6 +16,9 @@ export const PathfindingVisualiser = () => {
     const [gridFrame, setGridFrame] = useState(initialseGridWith(TileFrame.Blank));
 
     const [tilePlacementType, setTilePlacementType] = useState("wall");
+    const [pathAlgo, setPathAlgo] = useState("a-star");
+    const [heuristic, setHeuristic] = useState("manhattan");
+    const [gridPattern, setGridPattern] = useState("random-maze");
 
     const [isMouseDown, setMouseDown] = useState(false);
     const [isModalVisible, setModalVisibility] = useState(true);
@@ -60,7 +63,7 @@ export const PathfindingVisualiser = () => {
 
     const opacity = isModalVisible ? "0.1" : "1";
 
-    async function animateAlgorithm(pathAlgo: string, heuristic: string) {
+    async function animateAlgorithm() {
         const algorithm = stringToAlgorithm.get(pathAlgo);
         const frames = algorithm(start, goal, walls, weights, heuristic);
 
@@ -73,6 +76,10 @@ export const PathfindingVisualiser = () => {
         }
 
         setRunning(false);
+    }
+
+    function isDisplayingSearch() {
+        return gridFrame.some(gridRow => gridRow.includes(TileFrame.Searching) || gridRow.includes(TileFrame.Path));
     }
 
     function calculateDelay() {
@@ -121,19 +128,25 @@ export const PathfindingVisualiser = () => {
         const target = { row: targetRow, col: targetCol };
 
         if (!running && !isSameCoord(start, target) && !isSameCoord(goal, target) && !walls[targetRow][targetCol]) {
-            switch (tileFrame) {
-                case TileFrame.Start:
-                    setStart({ row: targetRow, col: targetCol });
-                    break;
-                case TileFrame.Goal:
-                    setGoal({ row: targetRow, col: targetCol });
-                    break;
-                default:
-                    throw `Tile type: ${tileFrame} not supported for drag and drop`;
+            if (tileFrame === TileFrame.Start) {
+                setStart({ row: targetRow, col: targetCol });
+                handleAutomaticPathRefit({ row: targetRow, col: targetCol }, goal);
+            } else if (tileFrame === TileFrame.Goal) {
+                setGoal({ row: targetRow, col: targetCol });
+                handleAutomaticPathRefit(start, { row: targetRow, col: targetCol });
             }
         }
 
         setMouseDown(false);
+    }
+
+    function handleAutomaticPathRefit(start: Coord, goal: Coord) {
+        if (isDisplayingSearch()) {
+            const algorithm = stringToAlgorithm.get(pathAlgo);
+            const frames = algorithm(start, goal, walls, weights, heuristic);
+
+            setGridFrame(frames[frames.length - 1]);
+        }
     }
 
     function clearSearch() {
@@ -145,13 +158,9 @@ export const PathfindingVisualiser = () => {
         setWalls(initialseGridWith(false));
     }
 
-    function updateTilePlacementType(tilePlacementType: string) {
-        setTilePlacementType(tilePlacementType);
-    }
-
     // Generate a maze with whatever tile placement type user has selected
-    function generateGridPattern(tilePattern: string) {
-        const gridPatternFunction = tilePatternToFunction.get(tilePattern);
+    function generateGridPattern() {
+        const gridPatternFunction = tilePatternToFunction.get(gridPattern);
         const placingFunction = tilePlacementTypeToFunction.get(tilePlacementType);
 
         clearWallsAndWeights();
@@ -163,15 +172,36 @@ export const PathfindingVisualiser = () => {
         setModalVisibility(false);
     }
 
+    function handleUpdatePathAlgo(algo: string) {
+        setPathAlgo(algo);
+    }
+
+    function handleUpdateHeuristic(heuristic: string) {
+        setHeuristic(heuristic);
+    }
+
+    function handleUpdateGridPattern(pattern: string) {
+        setGridPattern(pattern);
+    }
+
+    function handleUpdateTilePlacementType(type: string) {
+        setTilePlacementType(type);
+    }
+    
+
     return (
         <>
             <div id="main-content" style={{ opacity: opacity }}>
                 <Menu
+                    updateTilePlacementType={handleUpdateTilePlacementType}
+                    updatePathAlgo={handleUpdatePathAlgo}
+                    updateHeuristic={handleUpdateHeuristic}
+                    updateGridPattern={handleUpdateGridPattern}
                     runAlgorithm={animateAlgorithm}
                     generateGridPattern={generateGridPattern}
-                    updateTilePlacementType={updateTilePlacementType}
                     clearWallsAndWeights={clearWallsAndWeights}
                     clearSearch={clearSearch}
+                    pathAlgo={pathAlgo}
                     running={running}
                 />
                 <Grid
@@ -192,3 +222,4 @@ export const PathfindingVisualiser = () => {
         </>
     )
 }
+

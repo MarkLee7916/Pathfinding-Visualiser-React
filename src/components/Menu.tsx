@@ -1,11 +1,15 @@
-import React, { useState } from "react";
+import React from "react";
 
 interface Props {
-    runAlgorithm: (pathAlgo: string, heuristic: string) => Promise<void>
     updateTilePlacementType: (tilePlacementType: string) => void
-    generateGridPattern: (gridPattern: string) => void
+    updatePathAlgo: (algo: string) => void
+    updateHeuristic: (heuristic: string) => void
+    updateGridPattern: (pattern: string) => void
+    runAlgorithm: () => Promise<void>
+    generateGridPattern: () => void
     clearWallsAndWeights: () => void
     clearSearch: () => void
+    pathAlgo: string
     running: boolean
 }
 
@@ -25,24 +29,28 @@ const pathAlgoDescriptions = new Map([
     ["bidirectional-random", "Random search running concurrently from both the start and goal nodes"]
 ]);
 
-export const Menu = ({ runAlgorithm, updateTilePlacementType, generateGridPattern, clearWallsAndWeights, clearSearch, running }: Props) => {
-    const [pathAlgo, setPathAlgo] = useState("a-star");
-    const [heuristic, setHeuristic] = useState("manhattan");
-    const [gridPattern, setGridPattern] = useState("random-maze");
 
+export const Menu = ({
+  updateTilePlacementType,
+  updatePathAlgo,
+  updateHeuristic,
+  updateGridPattern,
+  runAlgorithm,
+  generateGridPattern,
+  clearWallsAndWeights,
+  clearSearch,
+  pathAlgo,
+  running,
+}: Props) => {
     // Some elements in menu are hidden when algorithm is running
     const runVisibility = running ? "hidden" : "visible";
 
     function handleUpdateAlgo(event) {
-        setPathAlgo(event.target.value);
+        updatePathAlgo(event.target.value);
     }
 
     function handleUpdateHeuristic(event) {
-        setHeuristic(event.target.value);
-    }
-
-    function handleRunAlgorithm() {
-        runAlgorithm(pathAlgo, heuristic);
+        updateHeuristic(event.target.value);
     }
 
     function handleUpdateTilePlacementType(event) {
@@ -50,11 +58,7 @@ export const Menu = ({ runAlgorithm, updateTilePlacementType, generateGridPatter
     }
 
     function handleUpdateGridPattern(event) {
-        setGridPattern(event.target.value);
-    }
-
-    function handleGenerateGridPattern() {
-        generateGridPattern(gridPattern);
+        updateGridPattern(event.target.value);
     }
 
     return (
@@ -62,7 +66,7 @@ export const Menu = ({ runAlgorithm, updateTilePlacementType, generateGridPatter
             <header>
                 <nav>
                     <ul id="menu">
-                        <select id="select-algo" className="menu-button" onChange={handleUpdateAlgo} value={pathAlgo}>
+                        <select id="select-algo" className="menu-button" onChange={handleUpdateAlgo}>
                             <option value="a-star">A*</option>
                             <option value="best-first-search">Greedy Best First Search</option>
                             <option value="depth-first-search">Depth First Search</option>
@@ -88,7 +92,7 @@ export const Menu = ({ runAlgorithm, updateTilePlacementType, generateGridPatter
                             <option value="weight">Add Weights</option>
                         </select>
 
-                        <select id="heuristic-type" className="menu-button" onChange={handleUpdateHeuristic} value={heuristic}>
+                        <select id="heuristic-type" className="menu-button" onChange={handleUpdateHeuristic}>
                             <option value="manhattan">Manhattan Heuristic</option>
                             <option value="chebyshev">Chebyshev Heuristic</option>
                             <option value="euclidean">Euclidean Heuristic</option>
@@ -110,14 +114,14 @@ export const Menu = ({ runAlgorithm, updateTilePlacementType, generateGridPatter
 
                         <button className="menu-button"
                             id="generate-wall-pattern"
-                            onClick={handleGenerateGridPattern}
+                            onClick={generateGridPattern}
                             style={{ visibility: runVisibility }}>
                             Generate Grid Pattern
                         </button>
 
                         <button className="menu-button"
                             id="run-algo"
-                            onClick={handleRunAlgorithm}
+                            onClick={runAlgorithm}
                             style={{ visibility: runVisibility }}>
                             Run Algorithm
                         </button>
