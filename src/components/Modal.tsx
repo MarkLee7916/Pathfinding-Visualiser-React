@@ -16,6 +16,9 @@ export const Modal = ({ isVisible, hide }: Props) => {
             <p className="sub-heading">This tutorial will explain what this app is and walk you through the features</p>
             <p className="modal-text">You can jump in immediately by pressing "skip tutorial", or click "next" to access the next
                 portion of the tutorial</p>
+            <p className="modal-text">If you're not familiar with pathfinding, I'd recommend having this 
+            <a href="https://marklee7916.github.io/Pathfinding-Tutorial"> tutorial </a> up as you go, which helps explain some of the concepts
+            for people not versed in computing science</p>
 
             <img id="graph-image" className="modal-image" src="assets/graph.svg" />
             <button className="finish-tutorial modal-button" onClick={hide}>Skip Tutorial</button>
@@ -79,7 +82,7 @@ export const Modal = ({ isVisible, hide }: Props) => {
 
         <div className="tutorial-modal">
             <h1 className="heading">Enjoy!</h1>
-            <p className="modal-text">That's all folks! If you enjoyed you can check out the source code on 
+            <p className="modal-text">That's all folks! If you enjoyed you can check out the source code on
             <a href="https://github.com/MarkLee7916/Pathfinding-Visualiser-React"> GitHub</a></p>
 
             <img className="modal-image" src="assets/code.png" />

@@ -25,7 +25,7 @@ header {
 .menu-button {
   border: none;
   background-color: black;
-  font-size: 1vw;
+  font-size: 1vmax;
   color: white;
   cursor: pointer;
   outline: none;
@@ -35,14 +35,21 @@ header {
   opacity: 0.5;
 }
 
-.menu-text {
-  font-size: 1vw;
-  color: white;
-}
-
 #menu {
   display: flex;
   justify-content: space-around;
+
+  align-items: center;
+}
+
+@media screen and (max-width: 500px) {
+  #menu {
+    flex-direction: column;
+  }
+
+  .menu-button {
+    margin-bottom: 2vh;
+  }
 }
 
 .color-codes {
@@ -150,6 +157,7 @@ header {
 a {
   text-decoration: none;
   font-weight: bold;
+  color: navy;
 }
 
 a:hover {

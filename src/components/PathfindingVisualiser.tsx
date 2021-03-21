@@ -8,20 +8,38 @@ import { Menu } from "./Menu";
 import { Modal } from "./Modal";
 
 export const PathfindingVisualiser = () => {
+
+    // Coordinate of starting tile that we search from
     const [start, setStart] = useState({ row: 1, col: 1 });
+
+    // Coordinate of goal tile that we're aiming to find a path to
     const [goal, setGoal] = useState({ row: HEIGHT - 2, col: WIDTH - 2 });
 
+    // A grid of weights that define the cost of moving to a tile
     const [weights, setWeights] = useState(initialseGridWith(1));
+
+    // A grid of walls that act as obstacles to the pathfinding algorithms
     const [walls, setWalls] = useState(initialseGridWith(false));
+
+    // A grid of values that define a frame in a search animation
     const [gridFrame, setGridFrame] = useState(initialseGridWith(TileFrame.Blank));
 
+    // The type of placement user currently has selected in the dropdown
     const [tilePlacementType, setTilePlacementType] = useState("wall");
+
+    // The pathfinding algorithm user currently has selected in the dropdown
     const [pathAlgo, setPathAlgo] = useState("a-star");
+
+    // The heuristic user currently has selected in the dropdown
     const [heuristic, setHeuristic] = useState("manhattan");
+
+    // The grid pattern user currently has selected in the dropdown
     const [gridPattern, setGridPattern] = useState("random-maze");
 
     const [isMouseDown, setMouseDown] = useState(false);
+
     const [isModalVisible, setModalVisibility] = useState(true);
+    
     const [running, setRunning] = useState(false);
 
     // Detect if user has their mouse held down
@@ -129,11 +147,11 @@ export const PathfindingVisualiser = () => {
 
         if (!running && !isSameCoord(start, target) && !isSameCoord(goal, target) && !walls[targetRow][targetCol]) {
             if (tileFrame === TileFrame.Start) {
-                setStart({ row: targetRow, col: targetCol });
-                handleAutomaticPathRefit({ row: targetRow, col: targetCol }, goal);
+                setStart(target);
+                handleAutomaticPathRefit(target, goal);
             } else if (tileFrame === TileFrame.Goal) {
-                setGoal({ row: targetRow, col: targetCol });
-                handleAutomaticPathRefit(start, { row: targetRow, col: targetCol });
+                setGoal(target);
+                handleAutomaticPathRefit(start, target);
             }
         }
 
