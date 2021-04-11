@@ -4,9 +4,11 @@ export type Coord = { row: number, col: number }
 
 export type GridFrame = TileFrame[][];
 
-export const HEIGHT = computeHeightAndWidth().height;
+export type GenNeighbours = (coord: Coord) => Coord[];
 
-export const WIDTH = computeHeightAndWidth().width;
+export const HEIGHT = computeDimension(window.innerHeight);
+
+export const WIDTH = computeDimension(window.innerWidth);
 
 export const enum TileFrame {
     Start,
@@ -41,7 +43,7 @@ export function isSameCoord(coord1: Coord, coord2: Coord) {
 }
 
 // Get all nodes one step away from a given node (diagonals not considered)
-export function generateNeighbours({ row, col }: Coord) {
+export function generateNonDiagonalNeighbours({ row, col }: Coord) {
     const neighbours: Coord[] = [];
 
     addToNeighbours(neighbours, { row: row + 1, col: col });
@@ -50,6 +52,23 @@ export function generateNeighbours({ row, col }: Coord) {
     addToNeighbours(neighbours, { row: row, col: col - 1 });
 
     return neighbours;
+}
+
+// Get all nodes one step away from a given node (diagonals only)
+export function generateDiagonalNeighbours({ row, col }: Coord) {
+    const neighbours: Coord[] = [];
+
+    addToNeighbours(neighbours, { row: row + 1, col: col + 1 });
+    addToNeighbours(neighbours, { row: row - 1, col: col - 1 });
+    addToNeighbours(neighbours, { row: row + 1, col: col - 1 });
+    addToNeighbours(neighbours, { row: row - 1, col: col + 1 });
+
+    return neighbours;
+}
+
+// Get all nodes one step away from a given node (both diagonals and non diagonals)
+export function generateAllNeighbours(coord: Coord) {
+    return generateNonDiagonalNeighbours(coord).concat(generateDiagonalNeighbours(coord));
 }
 
 // Return true if the given grids have any tiles in common filled in
@@ -79,10 +98,8 @@ function addToNeighbours(neighbours: Coord[], pos: Coord) {
 }
 
 // Calculate height and width based off of the size of the users screen
-function computeHeightAndWidth() {
+function computeDimension(dimension: number) {
     const sizeModifier = 35;
-    const height = Math.floor(window.innerHeight / sizeModifier);
-    const width = Math.floor(window.innerWidth / sizeModifier);
 
-    return { height: height, width: width };
+    return Math.floor(dimension / sizeModifier);
 }

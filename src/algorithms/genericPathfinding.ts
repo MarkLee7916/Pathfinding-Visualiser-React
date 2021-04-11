@@ -1,7 +1,6 @@
 import { Collection } from "../data-structures/collection";
-import { Coord, initialseGridWith, generateNeighbours, getIntersection, GridFrame, hasIntersection, HEIGHT, isOutOfBounds, isSameCoord, TileFrame, WIDTH } from "../data-structures/grid";
+import { Coord, initialseGridWith, generateNonDiagonalNeighbours, getIntersection, GridFrame, hasIntersection, HEIGHT, isOutOfBounds, isSameCoord, TileFrame, WIDTH, GenNeighbours } from "../data-structures/grid";
 import { HashMap } from "../data-structures/hashmap";
-import { deepCopy } from "../utils";
 
 // Generic pathfinding algo for searching from a source. Parameterized with the data structure used to make it generic
 export function genericUnidirectionalSearch(
@@ -10,7 +9,8 @@ export function genericUnidirectionalSearch(
     agenda: Collection<Coord>,
     distances: HashMap<Coord, number>,
     weights: number[][],
-    walls: boolean[][]) {
+    walls: boolean[][],
+    generateNeighbours: GenNeighbours) {
 
     const path = new HashMap<Coord, Coord>();
     const visited = initialseGridWith(false);
@@ -22,7 +22,7 @@ export function genericUnidirectionalSearch(
     distances.add(start, 0);
 
     while (!agenda.isEmpty()) {
-        const isFound = considerNextNode(path, visited, agenda, goal, weights, considered, walls, distances, frames);
+        const isFound = considerNextNode(path, visited, agenda, goal, weights, considered, walls, generateNeighbours, distances, frames);
 
         if (isFound) {
             const finalPath = pathMapToGrid(path, goal);
@@ -44,7 +44,8 @@ export function genericBidirectionalSearch(
     start: Coord,
     goal: Coord,
     weights: number[][],
-    walls: boolean[][]) {
+    walls: boolean[][],
+    generateNeighbours: GenNeighbours) {
 
     const forwardPath = new HashMap<Coord, Coord>();
     const backwardPath = new HashMap<Coord, Coord>();
@@ -67,8 +68,8 @@ export function genericBidirectionalSearch(
     backwardVisited[goal.row][goal.col] = true;
 
     while (!forwardAgenda.isEmpty() && !backwardAgenda.isEmpty()) {
-        const foundForwards = considerNextNode(forwardPath, forwardVisited, forwardAgenda, goal, weights, forwardConsidered, walls, forwardDistances, frames);
-        const foundBackwards = considerNextNode(backwardPath, backwardVisited, backwardAgenda, start, weights, backwardConsidered, walls, backwardDistances, frames);
+        const foundForwards = considerNextNode(forwardPath, forwardVisited, forwardAgenda, goal, weights, forwardConsidered, walls, generateNeighbours, forwardDistances, frames);
+        const foundBackwards = considerNextNode(backwardPath, backwardVisited, backwardAgenda, start, weights, backwardConsidered, walls, generateNeighbours, backwardDistances, frames);
 
         mergeFrames(frames);
 
@@ -109,6 +110,7 @@ function considerNextNode(
     weights: number[][],
     considered: boolean[][],
     walls: boolean[][],
+    generateNeighbours: GenNeighbours,
     distances: HashMap<Coord, number>,
     frames: GridFrame[]) {
 
@@ -171,12 +173,12 @@ function mergeFrames(frames: GridFrame[]) {
 }
 
 // Add a frame containing the final path to the list
-function createFinalPathFrame(path: boolean[][], visited: boolean[][], considered: boolean[][], frames: GridFrame[]) {
+export function createFinalPathFrame(path: boolean[][], visited: boolean[][], considered: boolean[][], frames: GridFrame[]) {
     frames.push(generateGridFrame(visited, considered, path));
 }
 
 // Convert the hashmap pointer based path to a boolean grid based path
-function pathMapToGrid(pathMap: HashMap<Coord, Coord>, goal: Coord) {
+export function pathMapToGrid(pathMap: HashMap<Coord, Coord>, goal: Coord) {
     const path = initialseGridWith(false);
     let pos = goal;
 
@@ -190,7 +192,7 @@ function pathMapToGrid(pathMap: HashMap<Coord, Coord>, goal: Coord) {
 }
 
 // Encode the state of a pathfinding algorithm into a frame 
-function generateGridFrame(visited: boolean[][], considered: boolean[][], path: boolean[][]) {
+export function generateGridFrame(visited: boolean[][], considered: boolean[][], path: boolean[][]) {
     const grid = initialseGridWith(TileFrame.Blank);
 
     for (let row = 0; row < HEIGHT; row++) {

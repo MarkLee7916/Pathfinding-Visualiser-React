@@ -1,185 +1,185 @@
 * {
-  font-family: Helvetica-Neue, sans-serif;
+    font-family: Helvetica-Neue, sans-serif;
 }
 
 #main-content {
-  background-color: paleturquoise;
-  height: 100%;
-  width: 100%;
-  position: absolute;
-  top: 0;
-  left: 0;
-  bottom: 0;
-  right: 0;
-  overflow: auto;
+    background-color: paleturquoise;
+    height: 100%;
+    width: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    overflow: auto;
 }
 
 header {
-  background: black;
-  text-align: center;
-  padding-top: 2vh;
-  padding-bottom: 2vh;
-  margin-bottom: 2vh;
+    background: black;
+    text-align: center;
+    padding-top: 2vh;
+    padding-bottom: 2vh;
+    margin-bottom: 2vh;
 }
 
 .menu-button {
-  border: none;
-  background-color: black;
-  font-size: 1vmax;
-  color: white;
-  cursor: pointer;
-  outline: none;
+    border: none;
+    background-color: black;
+    font-size: 1vmax;
+    color: white;
+    cursor: pointer;
+    outline: none;
 }
 
 .menu-button:hover {
-  opacity: 0.5;
+    opacity: 0.5;
 }
 
 #menu {
-  display: flex;
-  justify-content: space-around;
+    display: flex;
+    justify-content: space-around;
 
-  align-items: center;
+    align-items: center;
 }
 
-@media screen and (max-width: 500px) {
-  #menu {
-    flex-direction: column;
-  }
+@media screen and (max-width: 600px) {
+    #menu {
+        flex-direction: column;
+    }
 
-  .menu-button {
-    margin-bottom: 2vh;
-  }
+    .menu-button {
+        margin-bottom: 2vh;
+    }
 }
 
 .color-codes {
-  margin-left: 1vw;
-  font-size: 2vmin;
+    margin-left: 1vw;
+    font-size: 2vmin;
 }
 
 #grid {
-  border-collapse: collapse;
-  table-layout: fixed;
-  overflow: hidden;
-  margin-left: auto;
-  margin-right: auto;
-  margin-top: 2vh;
+    border-collapse: collapse;
+    table-layout: fixed;
+    overflow: hidden;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 2vh;
 }
 
 #description {
-  padding-top: 2vh;
-  text-align: center;
-  font-size: 2vmin;
+    padding-top: 2vh;
+    text-align: center;
+    font-size: 2vmin;
 }
 
 .tutorial-modal {
-  position: absolute;
-  left: 10%;
-  margin: auto;
-  border-style: solid;
-  border-width: 1px;
-  text-align: center;
-  height: 80%;
-  width: 80%;
-  top: 10%;
-  background-color: white;
+    position: absolute;
+    left: 10%;
+    margin: auto;
+    border-style: solid;
+    border-width: 1px;
+    text-align: center;
+    height: 80%;
+    width: 80%;
+    top: 10%;
+    background-color: white;
 }
 
 .modal-image {
-  margin-top: 3vmin;
-  height: calc((22.9vh + 22.9vw) / 2);
-  width: calc((40.6vh + 40.6vw) / 2);
-  padding: 2px;
+    margin-top: 3vmin;
+    height: calc((22.9vh + 22.9vw) / 2);
+    width: calc((40.6vh + 40.6vw) / 2);
+    padding: 2px;
 }
 
 #graph-image {
-  height: 22.5vmin;
-  width: 25vmin;
+    height: 22.5vmin;
+    width: 25vmin;
 }
 
 .heading {
-  font-size: calc((4vh + 4vw) / 2);
-  padding-left: 1%;
-  padding-right: 1%;
+    font-size: calc((4vh + 4vw) / 2);
+    padding-left: 1%;
+    padding-right: 1%;
 }
 
 .sub-heading {
-  font-size: calc((3vh + 3vw) / 2);
-  padding-left: 1%;
-  padding-right: 1%;
+    font-size: calc((3vh + 3vw) / 2);
+    padding-left: 1%;
+    padding-right: 1%;
 }
 
 .modal-text {
-  font-size: calc((2vh + 2vw) / 2);
-  padding-left: 1%;
-  padding-right: 1%;
+    font-size: calc((2vh + 2vw) / 2);
+    padding-left: 1%;
+    padding-right: 1%;
 }
 
 .finish-tutorial {
-  position: absolute;
-  left: 0;
-  bottom: 0;
-  margin-bottom: 20px;
-  margin-left: 20px;
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    margin-bottom: 20px;
+    margin-left: 20px;
 }
 
 .next-page,
 #finish-final-modal {
-  position: absolute;
-  right: 0;
-  bottom: 0;
-  margin-bottom: 20px;
-  margin-right: 2vmin;
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    margin-bottom: 20px;
+    margin-right: 2vmin;
 }
 
 .previous-page {
-  position: absolute;
-  right: 0;
-  bottom: 0;
-  margin-right: 15vmin;
-  margin-bottom: 20px;
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    margin-right: 15vmin;
+    margin-bottom: 20px;
 }
 
 .modal-button {
-  border: none;
-  background-color: #e1909b;
-  color: white;
-  font-size: 2vmin;
-  padding: 3vmin;
-  border-radius: 10px;
+    border: none;
+    background-color: #e1909b;
+    color: white;
+    font-size: 2vmin;
+    padding: 3vmin;
+    border-radius: 10px;
 }
 
 .modal-button:hover {
-  opacity: 0.5;
-  cursor: pointer;
+    opacity: 0.5;
+    cursor: pointer;
 }
 
 a {
-  text-decoration: none;
-  font-weight: bold;
-  color: navy;
+    text-decoration: none;
+    font-weight: bold;
+    color: navy;
 }
 
 a:hover {
-  opacity: 0.5;
+    opacity: 0.5;
 }
 
 .row {
-  overflow: hidden;
+    overflow: hidden;
 }
 
 .tile {
-  border: 1px solid gray;
-  cursor: pointer;
-  overflow: hidden;
-  font-weight: 900;
-  color: gray;
-  height: 25px;
-  width: 25px;
-  user-select: none;
-  text-align: center;
+    border: 1px solid gray;
+    cursor: pointer;
+    overflow: hidden;
+    font-weight: 900;
+    color: gray;
+    height: 25px;
+    width: 25px;
+    user-select: none;
+    text-align: center;
 }
 
 .tile:hover {
-  opacity: 0.5;
+    opacity: 0.5;
 }

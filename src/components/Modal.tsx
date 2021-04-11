@@ -16,7 +16,7 @@ export const Modal = ({ isVisible, hide }: Props) => {
             <p className="sub-heading">This tutorial will explain what this app is and walk you through the features</p>
             <p className="modal-text">You can jump in immediately by pressing "skip tutorial", or click "next" to access the next
                 portion of the tutorial</p>
-            <p className="modal-text">If you're not familiar with pathfinding, I'd recommend having this 
+            <p className="modal-text">If you're not familiar with pathfinding, I'd recommend having this
             <a href="https://marklee7916.github.io/Pathfinding-Tutorial"> tutorial </a> up as you go, which helps explain some of the concepts
             for people not versed in computing science</p>
 
@@ -42,18 +42,6 @@ export const Modal = ({ isVisible, hide }: Props) => {
             <p className="modal-text">To move a start or goal tile, simply drag and drop it onto an empty tile</p>
 
             <img className="modal-image" src="assets/moveTile.png" />
-            <button className="finish-tutorial modal-button" onClick={hide}>Skip Tutorial</button>
-            <button className="previous-page modal-button" onClick={prevPage}>Previous</button>
-            <button className="next-page modal-button" onClick={nextPage}>Next</button>
-        </div>,
-
-        <div className="tutorial-modal">
-            <h1 className="heading">Maze Generation</h1>
-            <p className="modal-text">You don't have to draw walls and weights manually</p>
-            <p className="modal-text">If you select an item from the dropdown menu under "Random Maze" and then click
-            "Generate Grid Pattern" it will generate a maze of walls or weights automatically</p>
-
-            <img className="modal-image" src="assets/maze.png" />
             <button className="finish-tutorial modal-button" onClick={hide}>Skip Tutorial</button>
             <button className="previous-page modal-button" onClick={prevPage}>Previous</button>
             <button className="next-page modal-button" onClick={nextPage}>Next</button>

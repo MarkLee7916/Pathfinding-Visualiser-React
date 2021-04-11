@@ -1,14 +1,13 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { divideHorizontal, divideVertical, randomMaze } from "../algorithms/mazeAlgorithms";
-import { breadthFirstSearch, Algorithm, depthFirstSearch, bestFirstSearch, dijkstra, aStar, randomSearch, bidirectionalBFS, bidirectionalDFS, bidirectionalGBFS, bidirectionalDijkstra, bidirectionalAStar, bidirectionalRandom } from "../algorithms/pathfindingAlgorithms";
-import { Coord, initialseGridWith, HEIGHT, isSameCoord, TileFrame, WIDTH } from "../data-structures/grid";
+import { breadthFirstSearch, Algorithm, depthFirstSearch, bestFirstSearch, dijkstra, aStar, randomSearch, bidirectionalBFS, bidirectionalDFS, bidirectionalGBFS, bidirectionalDijkstra, bidirectionalAStar, bidirectionalRandom, hillClimbing, twoBeamSearch, threeBeamSearch } from "../algorithms/pathfindingAlgorithms";
+import { Coord, initialseGridWith, HEIGHT, isSameCoord, TileFrame, WIDTH, generateDiagonalNeighbours, generateNonDiagonalNeighbours, generateAllNeighbours, GenNeighbours } from "../data-structures/grid";
 import { deepCopy, randomIntBetween, wait } from "../utils";
 import { Grid } from "./Grid";
 import { Menu } from "./Menu";
 import { Modal } from "./Modal";
 
 export const PathfindingVisualiser = () => {
-
     // Coordinate of starting tile that we search from
     const [start, setStart] = useState({ row: 1, col: 1 });
 
@@ -36,17 +35,14 @@ export const PathfindingVisualiser = () => {
     // The grid pattern user currently has selected in the dropdown
     const [gridPattern, setGridPattern] = useState("random-maze");
 
+    // The types of neighbours generated user currently has selected in the dropdown
+    const [neighboursGenerated, setNeighboursGenerated] = useState("non-diagonals");
+
     const [isMouseDown, setMouseDown] = useState(false);
 
     const [isModalVisible, setModalVisibility] = useState(true);
-    
-    const [running, setRunning] = useState(false);
 
-    // Detect if user has their mouse held down
-    useEffect(() => {
-        document.addEventListener("mousedown", () => setMouseDown(true));
-        document.addEventListener("mouseup", () => setMouseDown(false));
-    }, []);
+    const [isAlgorithmRunning, setAlgorithmRunning] = useState(false);
 
     // Map an algorithms JSX representation onto its implementation
     const stringToAlgorithm = new Map<string, Algorithm>([
@@ -61,7 +57,10 @@ export const PathfindingVisualiser = () => {
         ["bidirectional-GBFS", bidirectionalGBFS],
         ["bidirectional-dijkstra", bidirectionalDijkstra],
         ["bidirectional-a-star", bidirectionalAStar],
-        ["bidirectional-random", bidirectionalRandom]
+        ["bidirectional-random", bidirectionalRandom],
+        ["hill-climbing", hillClimbing],
+        ["two-beam", twoBeamSearch],
+        ["three-beam", threeBeamSearch]
     ]);
 
     // Map a tile placements JSX representation onto its implementation
@@ -70,11 +69,18 @@ export const PathfindingVisualiser = () => {
         ["weight", toggleWeightAt]
     ]);
 
-    // Map a maxe generation algorithms JSX representation onto its implementation
+    // Map a maze generation algorithms JSX representation onto its implementation
     const tilePatternToFunction = new Map<string, Function>([
         ["random-maze", randomMaze],
         ["divide-horizontal", divideHorizontal],
         ["divide-vertical", divideVertical]
+    ]);
+
+    // Map a generate neighbours settings JSX representation onto its implementation
+    const neighboursGeneratedToFunction = new Map<string, GenNeighbours>([
+        ["diagonals", generateDiagonalNeighbours],
+        ["non-diagonals", generateNonDiagonalNeighbours],
+        ["both", generateAllNeighbours],
     ]);
 
     const DELAY = calculateDelay();
@@ -83,9 +89,9 @@ export const PathfindingVisualiser = () => {
 
     async function animateAlgorithm() {
         const algorithm = stringToAlgorithm.get(pathAlgo);
-        const frames = algorithm(start, goal, walls, weights, heuristic);
+        const frames = algorithm(start, goal, walls, neighboursGeneratedToFunction.get(neighboursGenerated), weights, heuristic);
 
-        setRunning(true);
+        setAlgorithmRunning(true);
 
         for (let i = 0; i < frames.length; i++) {
             await wait(DELAY);
@@ -93,7 +99,7 @@ export const PathfindingVisualiser = () => {
             setGridFrame(frames[i]);
         }
 
-        setRunning(false);
+        setAlgorithmRunning(false);
     }
 
     function isDisplayingSearch() {
@@ -110,7 +116,7 @@ export const PathfindingVisualiser = () => {
         setWeights(weights => {
             const weightsCopy = deepCopy(weights);
 
-            if (!isSameCoord(start, pos) && !isSameCoord(goal, pos) && !running) {
+            if (!isSameCoord(start, pos) && !isSameCoord(goal, pos) && !isAlgorithmRunning) {
                 if (weightsCopy[pos.row][pos.col] === 1) {
                     weightsCopy[pos.row][pos.col] = randomIntBetween(10, 100);
                 } else {
@@ -126,7 +132,7 @@ export const PathfindingVisualiser = () => {
         setWalls(walls => {
             const wallsCopy = deepCopy(walls);
 
-            if (!isSameCoord(start, pos) && !isSameCoord(goal, pos) && !running) {
+            if (!isSameCoord(start, pos) && !isSameCoord(goal, pos) && !isAlgorithmRunning) {
                 wallsCopy[pos.row][pos.col] = !wallsCopy[pos.row][pos.col];
             }
 
@@ -145,7 +151,7 @@ export const PathfindingVisualiser = () => {
     function handleDrop(targetRow: number, targetCol: number, tileFrame: TileFrame) {
         const target = { row: targetRow, col: targetCol };
 
-        if (!running && !isSameCoord(start, target) && !isSameCoord(goal, target) && !walls[targetRow][targetCol]) {
+        if (!isAlgorithmRunning && !isSameCoord(start, target) && !isSameCoord(goal, target) && !walls[targetRow][targetCol]) {
             if (tileFrame === TileFrame.Start) {
                 setStart(target);
                 handleAutomaticPathRefit(target, goal);
@@ -161,7 +167,7 @@ export const PathfindingVisualiser = () => {
     function handleAutomaticPathRefit(start: Coord, goal: Coord) {
         if (isDisplayingSearch()) {
             const algorithm = stringToAlgorithm.get(pathAlgo);
-            const frames = algorithm(start, goal, walls, weights, heuristic);
+            const frames = algorithm(start, goal, walls, neighboursGeneratedToFunction.get(neighboursGenerated), weights, heuristic);
 
             setGridFrame(frames[frames.length - 1]);
         }
@@ -205,22 +211,30 @@ export const PathfindingVisualiser = () => {
     function handleUpdateTilePlacementType(type: string) {
         setTilePlacementType(type);
     }
-    
+
+    function handleUpdateNeighboursGenerated(type: string) {
+        setNeighboursGenerated(type);
+    }
 
     return (
         <>
-            <div id="main-content" style={{ opacity: opacity }}>
+            <div id="main-content"
+                style={{ opacity: opacity }}
+                onMouseDown={() => setMouseDown(true)}
+                onMouseUp={() => setMouseDown(false)}
+            >
                 <Menu
                     updateTilePlacementType={handleUpdateTilePlacementType}
                     updatePathAlgo={handleUpdatePathAlgo}
                     updateHeuristic={handleUpdateHeuristic}
                     updateGridPattern={handleUpdateGridPattern}
+                    updateNeighboursGenerated={handleUpdateNeighboursGenerated}
                     runAlgorithm={animateAlgorithm}
                     generateGridPattern={generateGridPattern}
                     clearWallsAndWeights={clearWallsAndWeights}
                     clearSearch={clearSearch}
                     pathAlgo={pathAlgo}
-                    running={running}
+                    running={isAlgorithmRunning}
                 />
                 <Grid
                     start={start}
