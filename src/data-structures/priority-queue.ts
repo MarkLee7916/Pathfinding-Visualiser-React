@@ -24,6 +24,4 @@ export class PriorityQueue<T> implements Collection<T> {
     public isEmpty() {
         return this.queue.length === 0;
     }
-
-
 }

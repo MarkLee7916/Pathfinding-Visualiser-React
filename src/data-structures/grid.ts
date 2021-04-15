@@ -6,9 +6,9 @@ export type GridFrame = TileFrame[][];
 
 export type GenNeighbours = (coord: Coord) => Coord[];
 
-export const HEIGHT = computeDimension(window.innerHeight);
+export const HEIGHT = computeDimensionRatios(60).height;
 
-export const WIDTH = computeDimension(window.innerWidth);
+export const WIDTH = computeDimensionRatios(60).width;
 
 export const enum TileFrame {
     Start,
@@ -98,8 +98,14 @@ function addToNeighbours(neighbours: Coord[], pos: Coord) {
 }
 
 // Calculate height and width based off of the size of the users screen
-function computeDimension(dimension: number) {
-    const sizeModifier = 35;
+function computeDimensionRatios(maxDimension: number) {
+    const totalScreenLength = window.innerHeight + window.innerWidth;
 
-    return Math.floor(dimension / sizeModifier);
+    return {
+        height: Math.round(window.innerHeight / totalScreenLength * maxDimension),
+        width: Math.round(window.innerWidth / totalScreenLength * maxDimension)
+    }
 }
+
+
+

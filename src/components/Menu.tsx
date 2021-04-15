@@ -1,4 +1,5 @@
 import React from "react";
+import { Dropdown } from "./Dropdown";
 
 interface Props {
     updateTilePlacementType: (tilePlacementType: string) => void
@@ -48,7 +49,7 @@ export const Menu = ({
     running,
 }: Props) => {
     // Some elements in menu are hidden when algorithm is running
-    const runVisibility = running ? "hidden" : "visible";
+    const menuVisibilityRunning = running ? "hidden" : "visible";
 
     function handleUpdateAlgo(event) {
         updatePathAlgo(event.target.value);
@@ -74,73 +75,113 @@ export const Menu = ({
         <>
             <header>
                 <nav>
-                    <ul id="menu">
-                        <select id="select-algo" className="menu-button" onChange={handleUpdateAlgo}>
-                            <option value="a-star">A*</option>
-                            <option value="best-first-search">Greedy Best First Search</option>
-                            <option value="depth-first-search">Depth First Search</option>
-                            <option value="breadth-first-search">Breadth First Search</option>
-                            <option value="dijkstra">Dijkstra's</option>
-                            <option value="random">Random Search</option>
-                            <option value="bidirectional-a-star">Bidirectional A*</option>
-                            <option value="bidirectional-GBFS">Bidirectional GBFS</option>
-                            <option value="bidirectional-DFS">Bidirectional DFS</option>
-                            <option value="bidirectional-BFS">Bidirectional BFS</option>
-                            <option value="bidirectional-dijkstra">Bidirectional Dijkstra's</option>
-                            <option value="bidirectional-random">Bidirectional Random</option>
-                            <option value="hill-climbing">Hill Climbing</option>
-                            <option value="two-beam">Two Beam Search</option>
-                            <option value="three-beam">Three Beam Search</option>
-                        </select>
+                    <ul id="menu" style={{ visibility: menuVisibilityRunning }}>
+                        <Dropdown
+                            callback={handleUpdateAlgo}
+                            displays={[
+                                "A*",
+                                "Greedy Best First Search",
+                                "Depth First Search",
+                                "Breadth First Search",
+                                "Dijkstra's",
+                                "Random Search",
+                                "Bidirectional A*",
+                                "Bidirectional GBFS",
+                                "Bidirectional DFS",
+                                "Bidirectional BFS",
+                                "Bidirectional Dijkstra's",
+                                "Bidirectional Random",
+                                "Hill Climbing",
+                                "Two Beam Search",
+                                "Three Beam Search"
+                            ]}
+                            values={[
+                                "a-star",
+                                "best-first-search",
+                                "depth-first-search",
+                                "breadth-first-search",
+                                "dijkstra",
+                                "random",
+                                "bidirectional-a-star",
+                                "bidirectional-GBFS",
+                                "bidirectional-DFS",
+                                "bidirectional-BFS",
+                                "bidirectional-dijkstra",
+                                "bidirectional-random",
+                                "hill-climbing",
+                                "two-beam",
+                                "three-beam"
+                            ]}
+                            description={
+                                "The algorithm that tries to find the path"
+                            }
+                        />
 
-                        <select id="heuristic-type" className="menu-button" onChange={handleUpdateHeuristic}>
-                            <option value="manhattan">Manhattan Heuristic</option>
-                            <option value="chebyshev">Chebyshev Heuristic</option>
-                            <option value="euclidean">Euclidean Heuristic</option>
-                        </select>
+                        <Dropdown
+                            callback={handleUpdateHeuristic}
+                            displays={[
+                                "Manhattan Heuristic",
+                                "Chebyshev Heuristic",
+                                "Euclidean Heuristic",
+                            ]}
+                            values={["manhattan", "chebyshev", "euclidean"]}
+                            description={
+                                "The method that our algorithms are using to estimate the distance to the goal in the grid"
+                            }
+                        />
 
-                        <select id="block-type" className="menu-button" onChange={handleUpdateTilePlacementType}>
-                            <option value="wall">Add Walls</option>
-                            <option value="weight">Add Weights</option>
-                        </select>
+                        <Dropdown
+                            callback={handleUpdateTilePlacementType}
+                            displays={["Add Walls", "Add Weights"]}
+                            values={["wall", "weight"]}
+                            description={
+                                "The type of barrier to set for the algorithm. Walls block the algorithm from passing completely, while weights make weighted algorithms view the barrier as costly to pass, making them less likely to use a route through it"
+                            }
+                        />
 
-                        <select id="neighbours" className="menu-button" onChange={handleUpdateNeighboursGenerated}>
-                            <option value="non-diagonals">Non Diagonals Only</option>
-                            <option value="diagonals">Diagonals Only</option>
-                            <option value="both">All Directions</option>
-                        </select>
+                        <Dropdown
+                            callback={handleUpdateNeighboursGenerated}
+                            displays={[
+                                "Non Diagonals Only",
+                                "Diagonals Only",
+                                "All directions",
+                            ]}
+                            values={["non-diagonals", "diagonals", "both"]}
+                            description={
+                                "The directions we allow an algorithm to expand into when searching"
+                            }
+                        />
 
-                        <select id="wall-pattern" className="menu-button" onChange={handleUpdateGridPattern}>
-                            <option value="random-maze">Random Maze</option>
-                            <option value="divide-horizontal">Divide Horizontal</option>
-                            <option value="divide-vertical">Divide Vertical</option>
-                        </select>
+                        <Dropdown
+                            callback={handleUpdateGridPattern}
+                            displays={[
+                                "Random Maze",
+                                "Divide Horizontal",
+                                "Divide Vertical",
+                            ]}
+                            values={[
+                                "random-maze",
+                                "divide-horizontal",
+                                "divide-vertical",
+                            ]}
+                            description={
+                                "The type of grid pattern we'd like to generate"
+                            }
+                        />
 
-                        <button className="menu-button"
-                            id="generate-wall-pattern"
-                            onClick={generateGridPattern}
-                            style={{ visibility: runVisibility }}>
+                        <button className="menu-button" onClick={generateGridPattern}>
                             Generate Grid Pattern
                         </button>
 
-                        <button className="menu-button"
-                            id="reset-walls"
-                            onClick={clearWallsAndWeights}
-                            style={{ visibility: runVisibility }}>
+                        <button className="menu-button" onClick={clearWallsAndWeights}>
                             Reset Walls and Weights
                         </button>
 
-                        <button className="menu-button"
-                            id="reset-path"
-                            onClick={clearSearch}
-                            style={{ visibility: runVisibility }}>
+                        <button className="menu-button" onClick={clearSearch}>
                             Reset Search
                         </button>
 
-                        <button className="menu-button"
-                            id="run-algo"
-                            onClick={runAlgorithm}
-                            style={{ visibility: runVisibility }}>
+                        <button className="menu-button" onClick={runAlgorithm}>
                             Run Algorithm
                         </button>
                     </ul>

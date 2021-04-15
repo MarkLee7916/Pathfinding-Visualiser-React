@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { divideHorizontal, divideVertical, randomMaze } from "../algorithms/mazeAlgorithms";
 import { breadthFirstSearch, Algorithm, depthFirstSearch, bestFirstSearch, dijkstra, aStar, randomSearch, bidirectionalBFS, bidirectionalDFS, bidirectionalGBFS, bidirectionalDijkstra, bidirectionalAStar, bidirectionalRandom, hillClimbing, twoBeamSearch, threeBeamSearch } from "../algorithms/pathfindingAlgorithms";
 import { Coord, initialseGridWith, HEIGHT, isSameCoord, TileFrame, WIDTH, generateDiagonalNeighbours, generateNonDiagonalNeighbours, generateAllNeighbours, GenNeighbours } from "../data-structures/grid";
@@ -6,6 +6,8 @@ import { deepCopy, randomIntBetween, wait } from "../utils";
 import { Grid } from "./Grid";
 import { Menu } from "./Menu";
 import { Modal } from "./Modal";
+
+const DELAY = 50;
 
 export const PathfindingVisualiser = () => {
     // Coordinate of starting tile that we search from
@@ -83,9 +85,11 @@ export const PathfindingVisualiser = () => {
         ["both", generateAllNeighbours],
     ]);
 
-    const DELAY = calculateDelay();
-
     const opacity = isModalVisible ? "0.1" : "1";
+
+    useEffect(() =>
+        handleAutomaticPathRefit(start, goal)
+        , [neighboursGenerated, heuristic, start, goal, pathAlgo]);
 
     async function animateAlgorithm() {
         const algorithm = stringToAlgorithm.get(pathAlgo);
@@ -104,12 +108,6 @@ export const PathfindingVisualiser = () => {
 
     function isDisplayingSearch() {
         return gridFrame.some(gridRow => gridRow.includes(TileFrame.Searching) || gridRow.includes(TileFrame.Path));
-    }
-
-    function calculateDelay() {
-        const modifier = 2400;
-
-        return modifier / (HEIGHT + WIDTH);
     }
 
     function toggleWeightAt(pos: Coord) {
@@ -154,10 +152,8 @@ export const PathfindingVisualiser = () => {
         if (!isAlgorithmRunning && !isSameCoord(start, target) && !isSameCoord(goal, target) && !walls[targetRow][targetCol]) {
             if (tileFrame === TileFrame.Start) {
                 setStart(target);
-                handleAutomaticPathRefit(target, goal);
             } else if (tileFrame === TileFrame.Goal) {
                 setGoal(target);
-                handleAutomaticPathRefit(start, target);
             }
         }
 
@@ -254,4 +250,6 @@ export const PathfindingVisualiser = () => {
         </>
     )
 }
+
+
 

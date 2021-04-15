@@ -4,7 +4,7 @@ import { PriorityQueue } from "../data-structures/priority-queue";
 import { Queue } from "../data-structures/queue";
 import { Stack } from "../data-structures/stack";
 import { generateAStarComparator, generateDijkstraComparator, generateRandomComparator, stringToHeuristic } from "./comparators";
-import { createFinalPathFrame, generateGridFrame, genericBidirectionalSearch, genericUnidirectionalSearch, pathMapToGrid } from "./genericPathfinding";
+import { genericBidirectionalSearch, genericUnidirectionalSearch, kBeamSearch } from "./genericPathfinding";
 
 export type Algorithm = (start: Coord, goal: Coord, walls: boolean[][], generateNeighbours: GenNeighbours, weights: number[][], heuristic: string) => GridFrame[];
 
@@ -127,49 +127,5 @@ export function threeBeamSearch(start: Coord, goal: Coord, walls: boolean[][], g
     return kBeamSearch(start, goal, walls, generateNeighbours, 3, heuristic);
 }
 
-function kBeamSearch(start: Coord, goal: Coord, walls: boolean[][], generateNeighbours: GenNeighbours, itemsEnqueuedPerTile: number, heuristic: string) {
-    const frames = [];
-    const heuristicComparator = stringToHeuristic.get(heuristic)(goal);
-    const priorityQueue = new PriorityQueue(heuristicComparator);
-    const visited = initialseGridWith(false);
-    const considered = initialseGridWith(false);
-    const path = new HashMap<Coord, Coord>();
 
-    visited[start.row][start.col] = true;
-    priorityQueue.add(start);
-
-    while (!priorityQueue.isEmpty()) {
-        const currentPos = priorityQueue.remove();
-
-        const currentNeighbours = generateNeighbours(currentPos).filter(neighbour =>
-            !isOutOfBounds(neighbour) &&
-            !walls[neighbour.row][neighbour.col] &&
-            !visited[neighbour.row][neighbour.col] &&
-            heuristicComparator(neighbour, currentPos) > 0
-        );
-
-        const kBestNeighbours =
-            currentNeighbours.length > itemsEnqueuedPerTile
-                ? currentNeighbours
-                    .sort(heuristicComparator)
-                    .slice(currentNeighbours.length - itemsEnqueuedPerTile, currentNeighbours.length)
-                : currentNeighbours;
-
-        considered[currentPos.row][currentPos.col] = true;
-        frames.push(generateGridFrame(visited, considered, []));
-
-        if (isSameCoord(currentPos, goal)) {
-            createFinalPathFrame(pathMapToGrid(path, goal), visited, considered, frames);
-            break;
-        }
-
-        kBestNeighbours.forEach(neighbour => {
-            priorityQueue.add(neighbour);
-            visited[neighbour.row][neighbour.col] = true;
-            path.add(neighbour, currentPos);
-        });
-    }
-
-    return frames;
-}
 

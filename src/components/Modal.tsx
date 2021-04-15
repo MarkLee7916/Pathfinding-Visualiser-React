@@ -49,7 +49,7 @@ export const Modal = ({ isVisible, hide }: Props) => {
 
         <div className="tutorial-modal">
             <h1 className="heading">Automatic Path Rerendering</h1>
-            <p className="modal-text">Once a path has been rendered, you can move the start or goal tiles to have it instantly rerender</p>
+            <p className="modal-text">Once a path has been rendered, you can modify the walls, weights, or goals to have it instantly rerender</p>
 
             <img className="modal-image" src="assets/beforeDrag.png" />
             <img className="modal-image" src="assets/afterDrag.png" />

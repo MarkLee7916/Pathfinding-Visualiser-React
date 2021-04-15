@@ -1,6 +1,8 @@
 import { Collection } from "../data-structures/collection";
 import { Coord, initialseGridWith, generateNonDiagonalNeighbours, getIntersection, GridFrame, hasIntersection, HEIGHT, isOutOfBounds, isSameCoord, TileFrame, WIDTH, GenNeighbours } from "../data-structures/grid";
 import { HashMap } from "../data-structures/hashmap";
+import { PriorityQueue } from "../data-structures/priority-queue";
+import { stringToHeuristic } from "./comparators";
 
 // Generic pathfinding algo for searching from a source. Parameterized with the data structure used to make it generic
 export function genericUnidirectionalSearch(
@@ -101,6 +103,53 @@ export function genericBidirectionalSearch(
     return frames;
 }
 
+export function kBeamSearch(start: Coord, goal: Coord, walls: boolean[][], generateNeighbours: GenNeighbours, itemsEnqueuedPerTile: number, heuristic: string) {
+    const frames = [];
+    const heuristicComparator = stringToHeuristic.get(heuristic)(goal);
+    const priorityQueue = new PriorityQueue(heuristicComparator);
+    const visited = initialseGridWith(false);
+    const considered = initialseGridWith(false);
+    const path = new HashMap<Coord, Coord>();
+
+    visited[start.row][start.col] = true;
+    priorityQueue.add(start);
+
+    while (!priorityQueue.isEmpty()) {
+        const currentPos = priorityQueue.remove();
+
+        const currentNeighbours = generateNeighbours(currentPos).filter(neighbour =>
+            !isOutOfBounds(neighbour) &&
+            !walls[neighbour.row][neighbour.col] &&
+            !visited[neighbour.row][neighbour.col] &&
+            heuristicComparator(neighbour, currentPos) > 0
+        );
+
+        const kBestNeighbours =
+            currentNeighbours.length > itemsEnqueuedPerTile
+                ? currentNeighbours
+                    .sort(heuristicComparator)
+                    .slice(currentNeighbours.length - itemsEnqueuedPerTile, currentNeighbours.length)
+                : currentNeighbours;
+
+        considered[currentPos.row][currentPos.col] = true;
+        frames.push(generateGridFrame(visited, considered, []));
+
+        if (isSameCoord(currentPos, goal)) {
+            createFinalPathFrame(pathMapToGrid(path, goal), visited, considered, frames);
+            break;
+        }
+
+        kBestNeighbours.forEach(neighbour => {
+            priorityQueue.add(neighbour);
+            visited[neighbour.row][neighbour.col] = true;
+            path.add(neighbour, currentPos);
+        });
+    }
+
+    return frames;
+}
+
+
 // Generic function for making one step in a pathfinding algorithm
 function considerNextNode(
     path: HashMap<Coord, Coord>,
@@ -173,12 +222,12 @@ function mergeFrames(frames: GridFrame[]) {
 }
 
 // Add a frame containing the final path to the list
-export function createFinalPathFrame(path: boolean[][], visited: boolean[][], considered: boolean[][], frames: GridFrame[]) {
+function createFinalPathFrame(path: boolean[][], visited: boolean[][], considered: boolean[][], frames: GridFrame[]) {
     frames.push(generateGridFrame(visited, considered, path));
 }
 
 // Convert the hashmap pointer based path to a boolean grid based path
-export function pathMapToGrid(pathMap: HashMap<Coord, Coord>, goal: Coord) {
+function pathMapToGrid(pathMap: HashMap<Coord, Coord>, goal: Coord) {
     const path = initialseGridWith(false);
     let pos = goal;
 
@@ -192,7 +241,7 @@ export function pathMapToGrid(pathMap: HashMap<Coord, Coord>, goal: Coord) {
 }
 
 // Encode the state of a pathfinding algorithm into a frame 
-export function generateGridFrame(visited: boolean[][], considered: boolean[][], path: boolean[][]) {
+function generateGridFrame(visited: boolean[][], considered: boolean[][], path: boolean[][]) {
     const grid = initialseGridWith(TileFrame.Blank);
 
     for (let row = 0; row < HEIGHT; row++) {
@@ -209,4 +258,3 @@ export function generateGridFrame(visited: boolean[][], considered: boolean[][],
 
     return grid;
 }
-
