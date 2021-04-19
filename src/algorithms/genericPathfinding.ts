@@ -182,6 +182,9 @@ function considerNextNode(
                 agenda.add(neighbour);
                 visited[neighbour.row][neighbour.col] = true;
                 path.add(neighbour, currentPos);
+            } else if (neighbourDistance < distances.get(neighbour)) {
+                distances.add(neighbour, neighbourDistance);
+                path.add(neighbour, currentPos);
             }
         }
     });

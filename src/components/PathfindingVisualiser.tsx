@@ -111,31 +111,31 @@ export const PathfindingVisualiser = () => {
     }
 
     function toggleWeightAt(pos: Coord) {
-        setWeights(weights => {
-            const weightsCopy = deepCopy(weights);
+        if (!isSameCoord(start, pos) && !isSameCoord(goal, pos) && !isAlgorithmRunning) {
+            setWeights(weights => {
+                const weightsCopy = deepCopy(weights);
 
-            if (!isSameCoord(start, pos) && !isSameCoord(goal, pos) && !isAlgorithmRunning) {
                 if (weightsCopy[pos.row][pos.col] === 1) {
                     weightsCopy[pos.row][pos.col] = randomIntBetween(10, 100);
                 } else {
                     weightsCopy[pos.row][pos.col] = 1;
                 }
-            }
 
-            return weightsCopy;
-        });
+                return weightsCopy;
+            });
+        }
     }
 
     function toggleWallAt(pos: Coord) {
-        setWalls(walls => {
-            const wallsCopy = deepCopy(walls);
+        if (!isSameCoord(start, pos) && !isSameCoord(goal, pos) && !isAlgorithmRunning) {
+            setWalls(walls => {
+                const wallsCopy = deepCopy(walls);
 
-            if (!isSameCoord(start, pos) && !isSameCoord(goal, pos) && !isAlgorithmRunning) {
                 wallsCopy[pos.row][pos.col] = !wallsCopy[pos.row][pos.col];
-            }
 
-            return wallsCopy;
-        });
+                return wallsCopy;
+            });
+        }
     }
 
     // Place either a wall or a weight at the given tile depending on what user has selected

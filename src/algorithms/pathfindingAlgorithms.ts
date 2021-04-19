@@ -115,15 +115,15 @@ export function bidirectionalRandom(start: Coord, goal: Coord, walls: boolean[][
     return genericBidirectionalSearch(forwardsQueue, backwardQueue, forwardsDistances, backwardsDistances, start, goal, weights, walls, generateNeighbours);
 }
 
-export function hillClimbing(start: Coord, goal: Coord, walls: boolean[][], generateNeighbours: GenNeighbours, weights: number[][], heuristic: string) {
+export function hillClimbing(start: Coord, goal: Coord, walls: boolean[][], generateNeighbours: GenNeighbours, _: number[][], heuristic: string) {
     return kBeamSearch(start, goal, walls, generateNeighbours, 1, heuristic);
 }
 
-export function twoBeamSearch(start: Coord, goal: Coord, walls: boolean[][], generateNeighbours: GenNeighbours, weights: number[][], heuristic: string) {
+export function twoBeamSearch(start: Coord, goal: Coord, walls: boolean[][], generateNeighbours: GenNeighbours, _: number[][], heuristic: string) {
     return kBeamSearch(start, goal, walls, generateNeighbours, 2, heuristic);
 }
 
-export function threeBeamSearch(start: Coord, goal: Coord, walls: boolean[][], generateNeighbours: GenNeighbours, weights: number[][], heuristic: string) {
+export function threeBeamSearch(start: Coord, goal: Coord, walls: boolean[][], generateNeighbours: GenNeighbours, _: number[][], heuristic: string) {
     return kBeamSearch(start, goal, walls, generateNeighbours, 3, heuristic);
 }
 

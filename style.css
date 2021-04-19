@@ -185,6 +185,8 @@ a:hover {
     color: gray;
     height: calc((2.2vmin + 2.2vmax) / 2);
     width: calc((2.2vmin + 2.2vmax) / 2);
+    font-size: calc((1.5vmin + 1.5vmax) / 2);
+    overflow: hidden;
     user-select: none;
     text-align: center;
 }
