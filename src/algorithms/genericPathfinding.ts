@@ -17,7 +17,7 @@ export function genericUnidirectionalSearch(
     const path = new HashMap<Coord, Coord>();
     const visited = initialseGridWith(false);
     const considered = initialseGridWith(false);
-    const frames: GridFrame[] = [];
+    const frames = [initialseGridWith(TileFrame.Blank)];
 
     agenda.add(start);
     visited[start.row][start.col] = true;
@@ -58,7 +58,7 @@ export function genericBidirectionalSearch(
     const forwardConsidered = initialseGridWith(false);
     const backwardConsidered = initialseGridWith(false);
 
-    const frames: GridFrame[] = [];
+    const frames = [initialseGridWith(TileFrame.Blank)];
 
     forwardDistances.add(start, 0);
     backwardDistances.add(goal, 0);
@@ -104,7 +104,7 @@ export function genericBidirectionalSearch(
 }
 
 export function kBeamSearch(start: Coord, goal: Coord, walls: boolean[][], generateNeighbours: GenNeighbours, itemsEnqueuedPerTile: number, heuristic: string) {
-    const frames = [];
+    const frames = [initialseGridWith(TileFrame.Blank)];
     const heuristicComparator = stringToHeuristic.get(heuristic)(goal);
     const priorityQueue = new PriorityQueue(heuristicComparator);
     const visited = initialseGridWith(false);

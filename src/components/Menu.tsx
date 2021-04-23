@@ -99,7 +99,7 @@ export const Menu = ({
         <>
             <header>
                 <nav>
-                    <ul className="menu" style={{ visibility: menuVisibilityRunning }}>
+                    <ul id="navmenu" style={{ visibility: menuVisibilityRunning }}>
                         <Dropdown
                             callback={handleUpdateAlgo}
                             displays={[
@@ -212,7 +212,7 @@ export const Menu = ({
                 </nav>
             </header>
 
-            <ul className="menu">
+            <ul id="slidermenu">
                 <div className="slider-container">
                     <input type="range" onChange={handleUpdateDelay} />
                     <span>Animation Delay: {delay}ms</span>

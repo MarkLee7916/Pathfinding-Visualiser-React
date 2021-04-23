@@ -7,6 +7,8 @@ import { Grid } from "./Grid";
 import { INITIAL_DELAY, Menu } from "./Menu";
 import { Modal } from "./Modal";
 
+const MODAL_REDISPLAY_DELAY = 100000;
+
 export const PathfindingVisualiser = () => {
     // A reference to the delay that can be updated while animation is running
     const delayRef = useRef(INITIAL_DELAY);
@@ -49,7 +51,7 @@ export const PathfindingVisualiser = () => {
 
     const [isMouseDown, setMouseDown] = useState(false);
 
-    const [isModalVisible, setModalVisibility] = useState(true);
+    const [isModalVisible, setModalVisibility] = useState(getModalVisibilityFromUserHistory());
 
     const [isAlgorithmRunning, setAlgorithmRunning] = useState(false);
 
@@ -92,13 +94,24 @@ export const PathfindingVisualiser = () => {
         ["both", generateAllNeighbours],
     ]);
 
-    useEffect(() =>
-        recomputeGridFrames()
-        , []);
-
     useEffect(() => {
+        clearSearch();
         hasGridChangedRef.current = true;
     }, [walls, weights, neighboursGenerated, start, goal, heuristic, pathAlgo]);
+
+    useEffect(() => {
+        clearSearch();
+    }, [gridFrames])
+
+    useEffect(() => {
+        const currDateStr = JSON.stringify(new Date().getTime());
+
+        window.addEventListener("resize", () => location.reload());
+        window.addEventListener("error", () => location.reload());
+        window.addEventListener("beforeunload", () => localStorage.setItem("lastvisit", currDateStr));
+
+        recomputeGridFrames()
+    }, []);
 
     async function animateAlgorithm() {
         recomputeGridFrames();
@@ -117,9 +130,21 @@ export const PathfindingVisualiser = () => {
         const algorithm = stringToAlgorithm.get(pathAlgo);
         const frames = algorithm(start, goal, walls, neighboursGeneratedToFunction.get(neighboursGenerated), weights, heuristic);
 
-        setFrameIndex(0);
         hasGridChangedRef.current = false;
         gridFrames.current = frames;
+    }
+
+    function getModalVisibilityFromUserHistory() {
+        const lastDateVisitedStr = localStorage.getItem("lastvisit");
+
+        if (lastDateVisitedStr === null) {
+            return true;
+        } else {
+            const lastDateVisited = JSON.parse(lastDateVisitedStr);
+            const currentDate = new Date().getTime();
+
+            return currentDate - lastDateVisited > MODAL_REDISPLAY_DELAY;
+        }
     }
 
     function toggleWeightAt(pos: Coord) {
@@ -254,7 +279,7 @@ export const PathfindingVisualiser = () => {
                 <Grid
                     start={start}
                     goal={goal}
-                    gridFrame={gridFrames.current[frameIndex]}
+                    gridFrame={gridFrames.current[frameIndex < gridFrames.current.length ? frameIndex : 0]}
                     weights={weights}
                     walls={walls}
                     notifyClicked={placeAtTile}

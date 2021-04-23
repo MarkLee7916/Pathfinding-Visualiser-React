@@ -35,14 +35,15 @@ header {
     opacity: 0.5;
 }
 
-.menu {
+#navmenu,
+#slidermenu {
     display: flex;
     justify-content: space-around;
     align-items: center;
 }
 
 @media screen and (max-width: 600px) {
-    .menu {
+    #navmenu {
         flex-direction: column;
     }
 
