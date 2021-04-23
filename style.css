@@ -35,19 +35,20 @@ header {
     opacity: 0.5;
 }
 
-#menu {
+.menu {
     display: flex;
     justify-content: space-around;
     align-items: center;
 }
 
 @media screen and (max-width: 600px) {
-    #menu {
+    .menu {
         flex-direction: column;
     }
 
     .menu-button {
-        margin-bottom: 2vh;
+        margin-bottom: 1vh;
+        margin-top: 1vh;
     }
 }
 
@@ -61,8 +62,27 @@ header {
     width: 20vw;
 }
 
-.color-codes {
+.slider-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-around;
+    font-size: 2vmin;
+}
+
+.slider-container > input {
+    width: 40vw;
+    height: 1vh;
+}
+
+#color-codes {
+    display: flex;
+    justify-content: center;
+}
+
+#color-codes > * {
     margin-left: 1vw;
+    margin-right: 1vw;
     font-size: 2vmin;
 }
 

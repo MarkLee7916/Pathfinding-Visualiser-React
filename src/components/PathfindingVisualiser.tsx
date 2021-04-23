@@ -1,15 +1,25 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { divideHorizontal, divideVertical, randomMaze } from "../algorithms/mazeAlgorithms";
 import { breadthFirstSearch, Algorithm, depthFirstSearch, bestFirstSearch, dijkstra, aStar, randomSearch, bidirectionalBFS, bidirectionalDFS, bidirectionalGBFS, bidirectionalDijkstra, bidirectionalAStar, bidirectionalRandom, hillClimbing, twoBeamSearch, threeBeamSearch } from "../algorithms/pathfindingAlgorithms";
 import { Coord, initialseGridWith, HEIGHT, isSameCoord, TileFrame, WIDTH, generateDiagonalNeighbours, generateNonDiagonalNeighbours, generateAllNeighbours, GenNeighbours } from "../data-structures/grid";
 import { deepCopy, randomIntBetween, wait } from "../utils";
 import { Grid } from "./Grid";
-import { Menu } from "./Menu";
+import { INITIAL_DELAY, Menu } from "./Menu";
 import { Modal } from "./Modal";
 
-const DELAY = 50;
-
 export const PathfindingVisualiser = () => {
+    // A reference to the delay that can be updated while animation is running
+    const delayRef = useRef(INITIAL_DELAY);
+
+    // True iff walls or weights have changed. Used to batch recomputation of animations
+    const hasGridChangedRef = useRef(false);
+
+    // A list of all the precomputed animations for the current algorithm config
+    const gridFrames = useRef([initialseGridWith(TileFrame.Blank)]);
+
+    // An index into the grid frames that controls which frame is currently being displayed
+    const [frameIndex, setFrameIndex] = useState(0);
+
     // Coordinate of starting tile that we search from
     const [start, setStart] = useState({ row: 1, col: 1 });
 
@@ -21,9 +31,6 @@ export const PathfindingVisualiser = () => {
 
     // A grid of walls that act as obstacles to the pathfinding algorithms
     const [walls, setWalls] = useState(initialseGridWith(false));
-
-    // A grid of values that define a frame in a search animation
-    const [gridFrame, setGridFrame] = useState(initialseGridWith(TileFrame.Blank));
 
     // The type of placement user currently has selected in the dropdown
     const [tilePlacementType, setTilePlacementType] = useState("wall");
@@ -85,29 +92,34 @@ export const PathfindingVisualiser = () => {
         ["both", generateAllNeighbours],
     ]);
 
-    const opacity = isModalVisible ? "0.1" : "1";
-
     useEffect(() =>
-        handleAutomaticPathRefit(start, goal)
-        , [neighboursGenerated, heuristic, start, goal, pathAlgo]);
+        recomputeGridFrames()
+        , []);
+
+    useEffect(() => {
+        hasGridChangedRef.current = true;
+    }, [walls, weights, neighboursGenerated, start, goal, heuristic, pathAlgo]);
 
     async function animateAlgorithm() {
-        const algorithm = stringToAlgorithm.get(pathAlgo);
-        const frames = algorithm(start, goal, walls, neighboursGeneratedToFunction.get(neighboursGenerated), weights, heuristic);
-
+        recomputeGridFrames();
         setAlgorithmRunning(true);
 
-        for (let i = 0; i < frames.length; i++) {
-            await wait(DELAY);
+        for (let i = 0; i < gridFrames.current.length; i++) {
+            await wait(delayRef.current);
 
-            setGridFrame(frames[i]);
+            setFrameIndex(i);
         }
 
         setAlgorithmRunning(false);
     }
 
-    function isDisplayingSearch() {
-        return gridFrame.some(gridRow => gridRow.includes(TileFrame.Searching) || gridRow.includes(TileFrame.Path));
+    function recomputeGridFrames() {
+        const algorithm = stringToAlgorithm.get(pathAlgo);
+        const frames = algorithm(start, goal, walls, neighboursGeneratedToFunction.get(neighboursGenerated), weights, heuristic);
+
+        setFrameIndex(0);
+        hasGridChangedRef.current = false;
+        gridFrames.current = frames;
     }
 
     function toggleWeightAt(pos: Coord) {
@@ -160,17 +172,8 @@ export const PathfindingVisualiser = () => {
         setMouseDown(false);
     }
 
-    function handleAutomaticPathRefit(start: Coord, goal: Coord) {
-        if (isDisplayingSearch()) {
-            const algorithm = stringToAlgorithm.get(pathAlgo);
-            const frames = algorithm(start, goal, walls, neighboursGeneratedToFunction.get(neighboursGenerated), weights, heuristic);
-
-            setGridFrame(frames[frames.length - 1]);
-        }
-    }
-
     function clearSearch() {
-        setGridFrame(initialseGridWith(TileFrame.Blank));
+        setFrameIndex(0);
     }
 
     function clearWallsAndWeights() {
@@ -212,10 +215,22 @@ export const PathfindingVisualiser = () => {
         setNeighboursGenerated(type);
     }
 
+    function handleUpdateDelayRef(delay: string) {
+        delayRef.current = parseInt(delay);
+    }
+
+    function handleUpdateFrameIndex(index: string) {
+        if (hasGridChangedRef.current) {
+            recomputeGridFrames();
+        } else if (!isAlgorithmRunning) {
+            setFrameIndex(parseInt(index));
+        }
+    }
+
     return (
         <>
             <div id="main-content"
-                style={{ opacity: opacity }}
+                style={{ opacity: isModalVisible ? "0.1" : "1" }}
                 onMouseDown={() => setMouseDown(true)}
                 onMouseUp={() => setMouseDown(false)}
             >
@@ -225,17 +240,21 @@ export const PathfindingVisualiser = () => {
                     updateHeuristic={handleUpdateHeuristic}
                     updateGridPattern={handleUpdateGridPattern}
                     updateNeighboursGenerated={handleUpdateNeighboursGenerated}
+                    updateDelayRef={handleUpdateDelayRef}
+                    updateFrameIndex={handleUpdateFrameIndex}
+                    frameIndex={frameIndex}
                     runAlgorithm={animateAlgorithm}
                     generateGridPattern={generateGridPattern}
                     clearWallsAndWeights={clearWallsAndWeights}
                     clearSearch={clearSearch}
                     pathAlgo={pathAlgo}
                     running={isAlgorithmRunning}
+                    animationSize={gridFrames.current.length}
                 />
                 <Grid
                     start={start}
                     goal={goal}
-                    gridFrame={gridFrame}
+                    gridFrame={gridFrames.current[frameIndex]}
                     weights={weights}
                     walls={walls}
                     notifyClicked={placeAtTile}

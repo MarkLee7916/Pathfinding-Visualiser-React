@@ -13,7 +13,7 @@ interface Props {
     isMouseDown: boolean
 }
 
-export const Grid = ({ start, goal, gridFrame: gridFrames, weights, walls, notifyClicked, notifyDrop, isMouseDown }: Props) => {
+export const Grid = ({ start, goal, gridFrame, weights, walls, notifyClicked, notifyDrop, isMouseDown }: Props) => {
     function renderRow(row: TileFrame[], rowIndex: number) {
         return (
             <tr className="row" key={rowIndex}>
@@ -38,7 +38,7 @@ export const Grid = ({ start, goal, gridFrame: gridFrames, weights, walls, notif
     return (
         <table id="grid">
             <tbody>
-                {gridFrames.map((row, index) => renderRow(row, index))}
+                {gridFrame.map((row, index) => renderRow(row, index))}
             </tbody>
         </table>
     );

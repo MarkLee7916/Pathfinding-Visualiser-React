@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Dropdown } from "./Dropdown";
 
 interface Props {
@@ -7,12 +7,16 @@ interface Props {
     updateHeuristic: (heuristic: string) => void
     updateGridPattern: (pattern: string) => void
     updateNeighboursGenerated: (type: string) => void
+    updateDelayRef: (delay: string) => void
+    updateFrameIndex: (index: string) => void
+    frameIndex: number
     runAlgorithm: () => Promise<void>
     generateGridPattern: () => void
     clearWallsAndWeights: () => void
     clearSearch: () => void
     pathAlgo: string
     running: boolean
+    animationSize: number
 }
 
 // Map an algorithm onto its description
@@ -35,19 +39,28 @@ const pathAlgoDescriptions = new Map([
     ["three-beam", "Like a greedy best first search, but it only keeps the three adjacent tiles with the smallest estimated distances for every tile it visits"]
 ]);
 
+export const INITIAL_DELAY = 50;
+
 export const Menu = ({
     updateTilePlacementType,
     updatePathAlgo,
     updateHeuristic,
     updateGridPattern,
     updateNeighboursGenerated,
+    updateDelayRef,
+    updateFrameIndex,
+    frameIndex,
     runAlgorithm,
     generateGridPattern,
     clearWallsAndWeights,
     clearSearch,
     pathAlgo,
     running,
+    animationSize
 }: Props) => {
+    // Keep track of delay so we can render it on the screen
+    const [delay, setDelay] = useState(INITIAL_DELAY);
+
     // Some elements in menu are hidden when algorithm is running
     const menuVisibilityRunning = running ? "hidden" : "visible";
 
@@ -71,11 +84,22 @@ export const Menu = ({
         updateNeighboursGenerated(event.target.value);
     }
 
+    function handleUpdateDelay(event) {
+        const newDelay = event.target.value;
+
+        setDelay(newDelay);
+        updateDelayRef(newDelay);
+    }
+
+    function handleUpdateFrameIndex(event) {
+        updateFrameIndex(event.target.value);
+    }
+
     return (
         <>
             <header>
                 <nav>
-                    <ul id="menu" style={{ visibility: menuVisibilityRunning }}>
+                    <ul className="menu" style={{ visibility: menuVisibilityRunning }}>
                         <Dropdown
                             callback={handleUpdateAlgo}
                             displays={[
@@ -182,19 +206,23 @@ export const Menu = ({
                         </button>
 
                         <button className="menu-button" onClick={runAlgorithm}>
-                            Run Algorithm
+                            Run Animation
                         </button>
                     </ul>
                 </nav>
             </header>
 
-            <span className="color-codes">🟥 Start</span>
-            <span className="color-codes">🟧 Goal</span>
-            <span className="color-codes">🟦 Searching</span>
-            <span className="color-codes">🟩 Frontier</span>
-            <span className="color-codes">⬜ Unvisited</span>
-            <span className="color-codes">⬛ Wall</span>
-            <span className="color-codes">🟨 Final Path</span>
+            <ul className="menu">
+                <div className="slider-container">
+                    <input type="range" onChange={handleUpdateDelay} />
+                    <span>Animation Delay: {delay}ms</span>
+                </div>
+
+                <div className="slider-container">
+                    <input type="range" onChange={handleUpdateFrameIndex} value={frameIndex} max={animationSize - 1} />
+                    <span>Step through animations</span>
+                </div>
+            </ul>
 
             <div id="description">
                 {pathAlgoDescriptions.get(pathAlgo)}

@@ -8,18 +8,20 @@ import { genericBidirectionalSearch, genericUnidirectionalSearch, kBeamSearch } 
 
 export type Algorithm = (start: Coord, goal: Coord, walls: boolean[][], generateNeighbours: GenNeighbours, weights: number[][], heuristic: string) => GridFrame[];
 
+const unweighted = initialseGridWith(0);
+
 export function breadthFirstSearch(start: Coord, goal: Coord, walls: boolean[][], generateNeighbours: GenNeighbours, weights: number[][], _: string) {
     const queue = new Queue<Coord>();
     const distances = new HashMap<Coord, number>();
 
-    return genericUnidirectionalSearch(start, goal, queue, distances, weights, walls, generateNeighbours);
+    return genericUnidirectionalSearch(start, goal, queue, distances, unweighted, walls, generateNeighbours);
 }
 
 export function depthFirstSearch(start: Coord, goal: Coord, walls: boolean[][], generateNeighbours: GenNeighbours, weights: number[][], _: string) {
     const stack = new Stack<Coord>();
     const distances = new HashMap<Coord, number>();
 
-    return genericUnidirectionalSearch(start, goal, stack, distances, weights, walls, generateNeighbours);
+    return genericUnidirectionalSearch(start, goal, stack, distances, unweighted, walls, generateNeighbours);
 }
 
 export function bestFirstSearch(start: Coord, goal: Coord, walls: boolean[][], generateNeighbours: GenNeighbours, weights: number[][], heuristic: string) {
@@ -27,7 +29,7 @@ export function bestFirstSearch(start: Coord, goal: Coord, walls: boolean[][], g
     const priorityQueue = new PriorityQueue(heuristicComparator);
     const distances = new HashMap<Coord, number>();
 
-    return genericUnidirectionalSearch(start, goal, priorityQueue, distances, weights, walls, generateNeighbours);
+    return genericUnidirectionalSearch(start, goal, priorityQueue, distances, unweighted, walls, generateNeighbours);
 }
 
 export function dijkstra(start: Coord, goal: Coord, walls: boolean[][], generateNeighbours: GenNeighbours, weights: number[][], _: string) {
@@ -51,7 +53,7 @@ export function randomSearch(start: Coord, goal: Coord, walls: boolean[][], gene
     const comparator = generateRandomComparator();
     const priorityQueue = new PriorityQueue(comparator);
 
-    return genericUnidirectionalSearch(start, goal, priorityQueue, distances, weights, walls, generateNeighbours);
+    return genericUnidirectionalSearch(start, goal, priorityQueue, distances, unweighted, walls, generateNeighbours);
 }
 
 export function bidirectionalBFS(start: Coord, goal: Coord, walls: boolean[][], generateNeighbours: GenNeighbours, weights: number[][], _: string) {
@@ -60,7 +62,7 @@ export function bidirectionalBFS(start: Coord, goal: Coord, walls: boolean[][], 
     const forwardQueue = new Queue<Coord>();
     const backwardQueue = new Queue<Coord>();
 
-    return genericBidirectionalSearch(forwardQueue, backwardQueue, forwardsDistances, backwardsDistances, start, goal, weights, walls, generateNeighbours);
+    return genericBidirectionalSearch(forwardQueue, backwardQueue, forwardsDistances, backwardsDistances, start, goal, unweighted, walls, generateNeighbours);
 }
 
 export function bidirectionalDFS(start: Coord, goal: Coord, walls: boolean[][], generateNeighbours: GenNeighbours, weights: number[][], _: string) {
@@ -69,7 +71,7 @@ export function bidirectionalDFS(start: Coord, goal: Coord, walls: boolean[][], 
     const forwardsStack = new Stack<Coord>();
     const backwardStack = new Stack<Coord>();
 
-    return genericBidirectionalSearch(forwardsStack, backwardStack, forwardsDistances, backwardsDistances, start, goal, weights, walls, generateNeighbours);
+    return genericBidirectionalSearch(forwardsStack, backwardStack, forwardsDistances, backwardsDistances, start, goal, unweighted, walls, generateNeighbours);
 }
 
 export function bidirectionalGBFS(start: Coord, goal: Coord, walls: boolean[][], generateNeighbours: GenNeighbours, weights: number[][], heuristic: string) {
@@ -80,7 +82,7 @@ export function bidirectionalGBFS(start: Coord, goal: Coord, walls: boolean[][],
     const forwardsQueue = new PriorityQueue<Coord>(forwardsComparator);
     const backwardQueue = new PriorityQueue<Coord>(backwardsComparator);
 
-    return genericBidirectionalSearch(forwardsQueue, backwardQueue, forwardsDistances, backwardsDistances, start, goal, weights, walls, generateNeighbours);
+    return genericBidirectionalSearch(forwardsQueue, backwardQueue, forwardsDistances, backwardsDistances, start, goal, unweighted, walls, generateNeighbours);
 }
 
 export function bidirectionalDijkstra(start: Coord, goal: Coord, walls: boolean[][], generateNeighbours: GenNeighbours, weights: number[][], heuristic: string) {
@@ -112,7 +114,7 @@ export function bidirectionalRandom(start: Coord, goal: Coord, walls: boolean[][
     const forwardsQueue = new PriorityQueue<Coord>(comparator);
     const backwardQueue = new PriorityQueue<Coord>(comparator);
 
-    return genericBidirectionalSearch(forwardsQueue, backwardQueue, forwardsDistances, backwardsDistances, start, goal, weights, walls, generateNeighbours);
+    return genericBidirectionalSearch(forwardsQueue, backwardQueue, forwardsDistances, backwardsDistances, start, goal, unweighted, walls, generateNeighbours);
 }
 
 export function hillClimbing(start: Coord, goal: Coord, walls: boolean[][], generateNeighbours: GenNeighbours, _: number[][], heuristic: string) {
