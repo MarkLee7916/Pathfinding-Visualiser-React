@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 
 interface Props {
     isVisible: boolean
@@ -8,7 +8,10 @@ interface Props {
 export const Modal = ({ isVisible, hide }: Props) => {
     const [currentModal, setModal] = useState(0);
 
-    const visibility = isVisible ? "visible" : "hidden";
+    // When user reopens modal, reset slide back to the first one
+    useEffect(() =>
+        setModal(0)
+        , [isVisible])
 
     const modals = [
         <div className="tutorial-modal">
@@ -116,7 +119,7 @@ export const Modal = ({ isVisible, hide }: Props) => {
     }
 
     return (
-        <div id="modal-container" style={{ visibility: visibility }}>
+        <div id="modal-container" style={{ visibility: isVisible ? "visible" : "hidden" }}>
             {modals[currentModal]}
         </div>
     )

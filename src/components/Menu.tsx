@@ -9,6 +9,7 @@ interface Props {
     updateNeighboursGenerated: (type: string) => void
     updateDelayRef: (delay: string) => void
     updateFrameIndex: (index: string) => void
+    showTutorial: () => void
     frameIndex: number
     runAlgorithm: () => Promise<void>
     generateGridPattern: () => void
@@ -49,6 +50,7 @@ export const Menu = ({
     updateNeighboursGenerated,
     updateDelayRef,
     updateFrameIndex,
+    showTutorial,
     frameIndex,
     runAlgorithm,
     generateGridPattern,
@@ -218,7 +220,7 @@ export const Menu = ({
                     <span>Animation Delay: {delay}ms</span>
                 </div>
 
-                <button className="modal-button">Tutorial</button>
+                <button id="show-menu" className="modal-button" onClick={showTutorial}>Tutorial</button>
 
                 <div className="slider-container">
                     <input type="range" onChange={handleUpdateFrameIndex} value={frameIndex} max={animationSize - 1} />

@@ -49,11 +49,14 @@ export const PathfindingVisualiser = () => {
     // The types of neighbours generated user currently has selected in the dropdown
     const [neighboursGenerated, setNeighboursGenerated] = useState("non-diagonals");
 
+    // True if user is currently holding their mouse down, otherwise false
     const [isMouseDown, setMouseDown] = useState(false);
 
-    const [isModalVisible, setModalVisibility] = useState(false);
+    // True if modal is currently displayed on the screen, otherwise false
+    const [isModalVisible, setModalVisibility] = useState(getModalVisibilityFromUserHistory());
 
-    const [isAlgorithmRunning, setAlgorithmRunning] = useState(false);
+    // True if an animation is currently in the process of being shown on screen, otherwise false
+    const [isAnimationRunning, setAlgorithmRunning] = useState(false);
 
     // Map an algorithms JSX representation onto its implementation
     const stringToAlgorithm = new Map<string, Algorithm>([
@@ -94,15 +97,18 @@ export const PathfindingVisualiser = () => {
         ["both", generateAllNeighbours],
     ]);
 
+    // Whenever use4 updates state, clear search and mark algorithm for updating
     useEffect(() => {
         clearSearch();
         hasGridChangedRef.current = true;
     }, [walls, weights, neighboursGenerated, start, goal, heuristic, pathAlgo]);
 
+    // Clear search whenever the algorithm is recomputed
     useEffect(() => {
         clearSearch();
     }, [gridFrames])
 
+    // Upon start, initialise event listeners and cache data visited
     useEffect(() => {
         const currDateStr = JSON.stringify(new Date().getTime());
 
@@ -113,6 +119,7 @@ export const PathfindingVisualiser = () => {
         recomputeGridFrames()
     }, []);
 
+    // Automatically cycle through the current grid frames, hiding the menu
     async function animateAlgorithm() {
         recomputeGridFrames();
         setAlgorithmRunning(true);
@@ -126,6 +133,7 @@ export const PathfindingVisualiser = () => {
         setAlgorithmRunning(false);
     }
 
+    // Rerun the algorithm with the current state and update the gridFrames
     function recomputeGridFrames() {
         const algorithm = stringToAlgorithm.get(pathAlgo);
         const frames = algorithm(start, goal, walls, neighboursGeneratedToFunction.get(neighboursGenerated), weights, heuristic);
@@ -134,6 +142,7 @@ export const PathfindingVisualiser = () => {
         gridFrames.current = frames;
     }
 
+    // Return true if user hasn't been on site in a while, otherwise return false
     function getModalVisibilityFromUserHistory() {
         const lastDateVisitedStr = localStorage.getItem("lastvisit");
 
@@ -148,7 +157,7 @@ export const PathfindingVisualiser = () => {
     }
 
     function toggleWeightAt(pos: Coord) {
-        if (!isSameCoord(start, pos) && !isSameCoord(goal, pos) && !isAlgorithmRunning) {
+        if (!isSameCoord(start, pos) && !isSameCoord(goal, pos) && !isAnimationRunning) {
             setWeights(weights => {
                 const weightsCopy = deepCopy(weights);
 
@@ -164,7 +173,7 @@ export const PathfindingVisualiser = () => {
     }
 
     function toggleWallAt(pos: Coord) {
-        if (!isSameCoord(start, pos) && !isSameCoord(goal, pos) && !isAlgorithmRunning) {
+        if (!isSameCoord(start, pos) && !isSameCoord(goal, pos) && !isAnimationRunning) {
             setWalls(walls => {
                 const wallsCopy = deepCopy(walls);
 
@@ -186,7 +195,7 @@ export const PathfindingVisualiser = () => {
     function handleDrop(targetRow: number, targetCol: number, tileFrame: TileFrame) {
         const target = { row: targetRow, col: targetCol };
 
-        if (!isAlgorithmRunning && !isSameCoord(start, target) && !isSameCoord(goal, target) && !walls[targetRow][targetCol]) {
+        if (!isAnimationRunning && !isSameCoord(start, target) && !isSameCoord(goal, target) && !walls[targetRow][targetCol]) {
             if (tileFrame === TileFrame.Start) {
                 setStart(target);
             } else if (tileFrame === TileFrame.Goal) {
@@ -240,14 +249,19 @@ export const PathfindingVisualiser = () => {
         setNeighboursGenerated(type);
     }
 
+    function handleShowTutorial() {
+        setModalVisibility(true);
+    }
+
     function handleUpdateDelayRef(delay: string) {
         delayRef.current = parseInt(delay);
     }
 
+    // Update the current frame in the animation that we're on
     function handleUpdateFrameIndex(index: string) {
         if (hasGridChangedRef.current) {
             recomputeGridFrames();
-        } else if (!isAlgorithmRunning) {
+        } else if (!isAnimationRunning) {
             setFrameIndex(parseInt(index));
         }
     }
@@ -267,13 +281,14 @@ export const PathfindingVisualiser = () => {
                     updateNeighboursGenerated={handleUpdateNeighboursGenerated}
                     updateDelayRef={handleUpdateDelayRef}
                     updateFrameIndex={handleUpdateFrameIndex}
+                    showTutorial={handleShowTutorial}
                     frameIndex={frameIndex}
                     runAlgorithm={animateAlgorithm}
                     generateGridPattern={generateGridPattern}
                     clearWallsAndWeights={clearWallsAndWeights}
                     clearSearch={clearSearch}
                     pathAlgo={pathAlgo}
-                    running={isAlgorithmRunning}
+                    running={isAnimationRunning}
                     animationSize={gridFrames.current.length}
                 />
                 <Grid
