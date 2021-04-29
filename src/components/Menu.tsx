@@ -218,6 +218,8 @@ export const Menu = ({
                     <span>Animation Delay: {delay}ms</span>
                 </div>
 
+                <button className="modal-button">Tutorial</button>
+
                 <div className="slider-container">
                     <input type="range" onChange={handleUpdateFrameIndex} value={frameIndex} max={animationSize - 1} />
                     <span>Step through animations</span>

@@ -51,7 +51,7 @@ export const PathfindingVisualiser = () => {
 
     const [isMouseDown, setMouseDown] = useState(false);
 
-    const [isModalVisible, setModalVisibility] = useState(getModalVisibilityFromUserHistory());
+    const [isModalVisible, setModalVisibility] = useState(false);
 
     const [isAlgorithmRunning, setAlgorithmRunning] = useState(false);
 
