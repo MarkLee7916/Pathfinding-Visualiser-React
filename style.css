@@ -172,15 +172,16 @@ header {
 
 .modal-button {
     border: none;
-    background-color: #e1909b;
-    color: white;
+    background-color: paleturquoise;
+    color: black;
     font-size: 2vmin;
     padding: 3vmin;
     border-radius: 10px;
 }
 
 .modal-button:hover {
-    opacity: 0.5;
+    color: paleturquoise;
+    background-color: black;
     cursor: pointer;
 }
 
